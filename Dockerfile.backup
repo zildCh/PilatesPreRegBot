@@ -1,0 +1,13 @@
+FROM alpine:latest
+
+RUN apk add --no-cache bash sshpass openssh dos2unix
+
+COPY backup.sh /app/backup.sh
+RUN dos2unix /app/backup.sh
+RUN chmod +x /app/backup.sh
+
+# Настройте cron для выполнения скрипта два раза в день (в полночь и в полдень)
+RUN echo "0 0,12 * * * /app/backup.sh" > /etc/crontabs/root
+
+
+CMD ["crond", "-f", "-d", "8"]
